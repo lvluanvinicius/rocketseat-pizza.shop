@@ -1,6 +1,6 @@
 import { Helmet } from 'react-helmet-async'
 import { useForm } from 'react-hook-form'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
 import * as zod from 'zod'
 
@@ -18,26 +18,25 @@ const signUpForm = zod.object({
 type signUpFormType = zod.infer<typeof signUpForm>
 
 export function SignUp() {
+  const navigate = useNavigate()
   const { handleSubmit, reset, register, formState } = useForm()
 
   async function handlesignUp(data: signUpFormType) {
     try {
       await new Promise((resolve) => setTimeout(resolve, 2000))
 
-      //   toast.success('Enviamos um link de autenticação para seu e-mail.', {
-      //     action: {
-      //       label: 'Reenviar',
-      //       onClick: () => {
-      //         toast.success('Link reencaminhado.')
-      //       },
-      //     },
-      //   })
+      toast.success('Enviamos um link de autenticação para seu e-mail.', {
+        action: {
+          label: 'Login',
+          onClick: () => navigate('/sign-in'),
+        },
+      })
 
       console.log(data)
 
       reset()
     } catch {
-      toast.error('Erro exemplo.')
+      toast.error('Erro ao cadastrar restaurante.')
     }
   }
 
@@ -45,7 +44,7 @@ export function SignUp() {
     <>
       <Helmet title="Login" />
       <div className="p-8">
-        <Button asChild className="absolute right-8 top-8" variant={'ghost'}>
+        <Button asChild className="absolute right-8 top-8" variant={'outline'}>
           <Link to={'/sign-in'}>Fazer Login</Link>
         </Button>
         <div className="flex w-[350px] flex-col justify-center gap-6">
@@ -94,6 +93,18 @@ export function SignUp() {
             >
               Finalize Cadastro
             </Button>
+
+            <p className="px-6 text-center text-sm leading-relaxed text-muted-foreground">
+              Ao continuar, você concorda com nossos{' '}
+              <a href="" className="underline underline-offset-4">
+                termos de serviço
+              </a>{' '}
+              e{' '}
+              <a href="" className="underline underline-offset-4">
+                política de privacidade
+              </a>
+              .
+            </p>
           </form>
         </div>
       </div>
