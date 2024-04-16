@@ -1,9 +1,11 @@
+import { useMutation } from '@tanstack/react-query'
 import { Helmet } from 'react-helmet-async'
 import { useForm } from 'react-hook-form'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import { toast } from 'sonner'
 import * as zod from 'zod'
 
+import { signIn } from '@/api/sign-in'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -15,11 +17,20 @@ const signInForm = zod.object({
 type SignInFormType = zod.infer<typeof signInForm>
 
 export function SignIn() {
-  const { handleSubmit, reset, register, formState } = useForm()
+  const [searchParams] = useSearchParams()
+  const { handleSubmit, reset, register, formState } = useForm<SignInFormType>({
+    defaultValues: {
+      email: searchParams.get('email') ?? '',
+    },
+  })
+
+  const { mutateAsync: authenticate } = useMutation({
+    mutationFn: signIn,
+  })
 
   async function handleSignIn(data: SignInFormType) {
     try {
-      await new Promise((resolve) => setTimeout(resolve, 2000))
+      await authenticate({ email: data.email })
 
       toast.success('Enviamos um link de autenticação para seu e-mail.', {
         action: {
@@ -29,9 +40,6 @@ export function SignIn() {
           },
         },
       })
-
-      console.log(data)
-
       reset()
     } catch {
       toast.error('Erro exemplo.')
